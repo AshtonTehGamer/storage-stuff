@@ -1,0 +1,25 @@
+local oldCurrentRoom = game.ReplicatedStorage.GameData.CurrentRoom.Value
+		local LookmanModel
+		pcall(makefolder, "Entities")
+			pcall(makefolder, "Entities/Config")
+			if not isfile("Entities/config/Lookman.txt") then
+				writefile(
+					"Entities/config/Lookman.txt",
+					game:GetService("HttpService"):JSONEncode("Lookman")
+				)
+			end
+			LookmanModel = game:GetObjects("rbxassetid://11363534454")[1]
+		LookmanModel.Parent = game:GetService("Teams")
+		game.ReplicatedStorage.GameData.CurrentRoom:GetPropertyChangedSignal("Value"):Connect(function()
+			local Lookman = LookmanModel:Clone()
+			if game.ReplicatedStorage.GameData.CurrentRoom.Value == oldCurrentRoom + 1 then
+				local randomNumber = math.random(1, #game.Workspace.CurrentRooms:FindFirstChild(game.ReplicatedStorage.GameData.CurrentRoom.Value):FindFirstChild("Nodes"))
+				local randomPlace = game.Workspace.CurrentRooms:FindFirstChild(game.ReplicatedStorage.GameData.CurrentRoom.Value):FindFirstChild("Nodes")[randomNumber]
+				Lookman:MoveTo(CFrame.new(randomPlace.CFrame.X, randomPlace.CFrame.Y + math.random(0, 2), randomPlace.CFrame.Z))
+				Lookman.Parent = workspace
+				Lookman.Core.Ambience:Play()
+				Lookman.Core.Initiate:Play()
+			else
+				Lookman:Destroy()
+			end
+		end)
